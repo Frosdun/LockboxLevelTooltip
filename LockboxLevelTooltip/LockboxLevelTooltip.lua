@@ -1,13 +1,21 @@
-local LOCKBOX_LEVELS = {
-    [4632] = 100, -- Ornate Bronze Lockbox
-    [4633] = 125, -- Heavy Bronze Lockbox
-    [4634] = 150, -- Iron Lockbox
-    [4636] = 175, -- Strong Iron Lockbox
-    [4637] = 200, -- Steel Lockbox
-    [4638] = 225, -- Reinforced Steel Lockbox
-    [5758] = 250, -- Mithril Lockbox
-    [5759] = 275, -- Thorium Lockbox
-    [5760] = 300, -- Eternium Lockbox
+local LOCKBOX_DATA = {
+
+    -- Lockboxes
+    [4632] = { yellow=1, green=86, grey=105 },                 -- Ornate Bronze Lockbox
+    [4633] = { orange=25, yellow=50, green=75, grey=125 },     -- Heavy Bronze Lockbox
+    [4634] = { orange=70, yellow=95, green=120, grey=170 },    -- Iron Lockbox
+    [4636] = { orange=125, yellow=150, green=175, grey=225 },  -- Strong Iron Lockbox
+    [4637] = { orange=175, yellow=205, green=225, grey=275 },  -- Steel Lockbox
+    [4638] = { orange=225, yellow=250, green=275 },            -- Reinforced Steel Lockbox
+    [5758] = { orange=225, yellow=250, green=275 },            -- Mithril Lockbox
+    [5759] = { orange=225, yellow=250, green=275 },            -- Thorium Lockbox
+    [5760] = { orange=225, yellow=265, green=320 },            -- Eternium Lockbox (Turtle)
+
+    -- Fishing Locked Chests
+    [6354]  = { orange=1 },                                    -- Small Locked Chest
+    [6355]  = { orange=70 },                                   -- Sturdy Locked Chest
+    [13875] = { orange=175 },                                  -- Ironbound Locked Chest
+    [13876] = { orange=250, green=300 },                       -- Reinforced Locked Chest (verify ID if needed)
 }
 
 local function AddLockboxInfo(tooltip, link)
@@ -18,11 +26,27 @@ local function AddLockboxInfo(tooltip, link)
 
     itemID = tonumber(itemID)
 
-    local required = LOCKBOX_LEVELS[itemID]
-    if not required then return end
+    local data = LOCKBOX_DATA[itemID]
+    if not data then return end
 
     tooltip:AddLine(" ")
-    tooltip:AddLine("Required Lockpicking: " .. required, 1, 0.82, 0)
+
+    if data.orange then
+        tooltip:AddLine("Orange: " .. data.orange, 1, 0.5, 0)
+    end
+
+    if data.yellow then
+        tooltip:AddLine("Yellow: " .. data.yellow, 1, 1, 0)
+    end
+
+    if data.green then
+        tooltip:AddLine("Green: " .. data.green, 0, 1, 0)
+    end
+
+    if data.grey then
+        tooltip:AddLine("Grey: " .. data.grey, 0.6, 0.6, 0.6)
+    end
+
     tooltip:Show()
 end
 
@@ -39,4 +63,6 @@ ItemRefTooltip.SetHyperlink = function(self, link)
     orig_ItemRefTooltip_SetHyperlink(self, link)
     AddLockboxInfo(self, link)
 end
+
+
 
