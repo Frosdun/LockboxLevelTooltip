@@ -7,6 +7,7 @@ local LOCKBOX_LEVELS = {
     [4638] = 225, -- Reinforced Steel Lockbox
     [5758] = 250, -- Mithril Lockbox
     [5759] = 275, -- Thorium Lockbox
+    [5760] = 300, -- Eternium Lockbox
 }
 
 local function AddLockboxInfo(tooltip, link)
@@ -38,3 +39,4 @@ ItemRefTooltip.SetHyperlink = function(self, link)
     orig_ItemRefTooltip_SetHyperlink(self, link)
     AddLockboxInfo(self, link)
 end
+
