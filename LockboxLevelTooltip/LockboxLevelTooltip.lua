@@ -30,25 +30,27 @@ local function AddLockboxInfo(tooltip, link)
     if not data then return end
 
     tooltip:AddLine(" ")
+    tooltip:AddLine("Lockpicking Difficulty:")
 
     if data.orange then
-        tooltip:AddLine("Orange: " .. data.orange, 1, 0.5, 0)
+        tooltip:AddLine(data.orange, 1, 0.5, 0) -- orange
     end
 
     if data.yellow then
-        tooltip:AddLine("Yellow: " .. data.yellow, 1, 1, 0)
+        tooltip:AddLine(data.yellow, 1, 1, 0) -- yellow
     end
 
     if data.green then
-        tooltip:AddLine("Green: " .. data.green, 0, 1, 0)
+        tooltip:AddLine(data.green, 0, 1, 0) -- green
     end
 
     if data.grey then
-        tooltip:AddLine("Grey: " .. data.grey, 0.6, 0.6, 0.6)
+        tooltip:AddLine(data.grey, 0.6, 0.6, 0.6) -- grey
     end
 
     tooltip:Show()
 end
+
 
 -- Hook GameTooltip (bags, inventory, etc.)
 local orig_GameTooltip_SetHyperlink = GameTooltip.SetHyperlink
@@ -63,6 +65,7 @@ ItemRefTooltip.SetHyperlink = function(self, link)
     orig_ItemRefTooltip_SetHyperlink(self, link)
     AddLockboxInfo(self, link)
 end
+
 
 
 
