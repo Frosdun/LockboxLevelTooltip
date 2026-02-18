@@ -75,8 +75,8 @@ local FOOTLOCKER_ZONE_DATA = {
     },
 
     ["The Barrens"] = {
-        ["Buccaneer's Strongbox"]    = { orange=1, yellow=30, green=55, grey=105 },
-        ["The Jewel of the Southsea"] = { orange=25, yellow=82, green=75, grey=125 },
+        ["Buccaneer's Strongbox"]     = { orange=1, yellow=30, green=55, grey=105 },
+        ["The Jewel of the Southsea"] = { orange=25, yellow=50, green=75, grey=125 },
     },
 
     ["Wetlands"] = {
@@ -85,55 +85,69 @@ local FOOTLOCKER_ZONE_DATA = {
 }
 
 --------------------------------------------------
--- SHARED DISPLAY FUNCTION
+-- DISPLAY FUNCTION
 --------------------------------------------------
 
 local function AddDifficultyLines(tooltip, data)
 
+    -- prevent duplicates
+    for i = 1, tooltip:NumLines() do
+        local line = _G[tooltip:GetName().."TextLeft"..i]
+        if line and line:GetText() and string.find(line:GetText(), "Lockpicking Difficulty") then
+            return
+        end
+    end
+
     tooltip:AddLine(" ")
     tooltip:AddLine("Lockpicking Difficulty:")
 
-    if data.orange then
-        tooltip:AddLine(data.orange, 1, 0.5, 0)
-    end
-    if data.yellow then
-        tooltip:AddLine(data.yellow, 1, 1, 0)
-    end
-    if data.green then
-        tooltip:AddLine(data.green, 0, 1, 0)
-    end
-    if data.grey then
-        tooltip:AddLine(data.grey, 0.6, 0.6, 0.6)
-    end
+    if data.orange then tooltip:AddLine(data.orange, 1, 0.5, 0) end
+    if data.yellow then tooltip:AddLine(data.yellow, 1, 1, 0) end
+    if data.green  then tooltip:AddLine(data.green, 0, 1, 0) end
+    if data.grey   then tooltip:AddLine(data.grey, 0.6, 0.6, 0.6) end
 
     tooltip:Show()
 end
 
 --------------------------------------------------
--- ITEM TOOLTIP HANDLER
+-- ITEM TOOLTIP (SAFE VANILLA HOOK)
 --------------------------------------------------
 
-local function AddLockboxInfo(tooltip, link)
+GameTooltip:HookScript("OnTooltipSetItem", function(self)
+
+    local name, link = self:GetItem()
     if not link then return end
 
-    local itemID = string.match(link, "item:(%d+)")
+    local itemID = tonumber(string.match(link, "item:(%d+)"))
     if not itemID then return end
 
-    itemID = tonumber(itemID)
+    local data = LOCKBOX_DATA[itemID]
+    if data then
+        AddDifficultyLines(self, data)
+    end
+end)
+
+ItemRefTooltip:HookScript("OnTooltipSetItem", function(self)
+
+    local name, link = self:GetItem()
+    if not link then return end
+
+    local itemID = tonumber(string.match(link, "item:(%d+)"))
+    if not itemID then return end
 
     local data = LOCKBOX_DATA[itemID]
-    if not data then return end
-
-    AddDifficultyLines(tooltip, data)
-end
+    if data then
+        AddDifficultyLines(self, data)
+    end
+end)
 
 --------------------------------------------------
--- GAMEOBJECT (FOOTLOCKER) HANDLER
+-- FOOTLOCKER TOOLTIP (GAMEOBJECT SAFE)
 --------------------------------------------------
 
-GameTooltip:HookScript("OnShow", function(self)
+GameTooltip:HookScript("OnTooltipSetUnit", function(self)
 
-    local name = self:GetText()
+    local name = UnitName("mouseover")
     if not name then return end
 
     local zone = GetRealZoneText()
@@ -143,32 +157,7 @@ GameTooltip:HookScript("OnShow", function(self)
     if not zoneData then return end
 
     local data = zoneData[name]
-    if not data then return end
-
-    -- prevent duplicate lines
-    for i = 1, self:NumLines() do
-        local line = _G[self:GetName().."TextLeft"..i]
-        if line and line:GetText() and string.find(line:GetText(), "Lockpicking Difficulty:") then
-            return
-        end
+    if data then
+        AddDifficultyLines(self, data)
     end
-
-    AddDifficultyLines(self, data)
 end)
-
---------------------------------------------------
--- HOOK ITEM TOOLTIPS
---------------------------------------------------
-
-local orig_GameTooltip_SetHyperlink = GameTooltip.SetHyperlink
-GameTooltip.SetHyperlink = function(self, link)
-    orig_GameTooltip_SetHyperlink(self, link)
-    AddLockboxInfo(self, link)
-end
-
-local orig_ItemRefTooltip_SetHyperlink = ItemRefTooltip.SetHyperlink
-ItemRefTooltip.SetHyperlink = function(self, link)
-    orig_ItemRefTooltip_SetHyperlink(self, link)
-    AddLockboxInfo(self, link)
-end
-
