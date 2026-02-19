@@ -133,7 +133,24 @@ GameTooltip:HookScript("OnUpdate", function(self)
 
     AddDifficultyLines(self, data)
 
+--------------------------------------------------
+-- BAG ITEM HOOK (JUNKBOXES)
+--------------------------------------------------
+
+local orig_GameTooltip_SetBagItem = GameTooltip.SetBagItem
+GameTooltip.SetBagItem = function(self, bag, slot)
+
+    orig_GameTooltip_SetBagItem(self, bag, slot)
+
+    local link = GetContainerItemLink(bag, slot)
+    if link then
+        AddLockboxInfo(self, link)
+    end
+end
+
+
 end)
+
 
 
 
