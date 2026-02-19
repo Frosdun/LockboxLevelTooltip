@@ -20,6 +20,13 @@ local LOCKBOX_DATA = {
     [6355]  = { orange=70 },
     [13875] = { orange=175 },
     [13876] = { orange=250, green=300 },
+
+    -- Junkboxes (Pickpocket)
+[16882] = { orange=1,   yellow=25,  green=50,  grey=75 },   -- Battered Junkbox
+[16883] = { orange=70,  yellow=95,  green=120, grey=170 },  -- Worn Junkbox
+[16884] = { orange=175, yellow=200, green=225, grey=275 },  -- Sturdy Junkbox
+[16885] = { orange=250, yellow=275, green=300 },            -- Heavy Junkbox
+
 }
 
 --------------------------------------------------
@@ -127,6 +134,7 @@ GameTooltip:HookScript("OnUpdate", function(self)
     AddDifficultyLines(self, data)
 
 end)
+
 
 
 
