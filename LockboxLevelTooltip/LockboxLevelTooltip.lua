@@ -9,13 +9,13 @@ local LOCKBOX_DATA = {
     [4638] = { orange=225, yellow=250, green=275 },            -- Reinforced Steel Lockbox
     [5758] = { orange=225, yellow=250, green=275 },            -- Mithril Lockbox
     [5759] = { orange=225, yellow=250, green=275 },            -- Thorium Lockbox
-    [5760] = { orange=225, yellow=265, green=320 },            -- Eternium Lockbox (Turtle)
+    [5760] = { orange=225, yellow=265, green=320 },            -- Eternium Lockbox 
 
     -- Fishing Locked Chests
     [6354]  = { orange=1 },                                    -- Small Locked Chest
     [6355]  = { orange=70 },                                   -- Sturdy Locked Chest
     [13875] = { orange=175 },                                  -- Ironbound Locked Chest
-    [13876] = { orange=250, green=300 },                       -- Reinforced Locked Chest (verify ID if needed)
+    [13876] = { orange=250, green=300 },                       -- Reinforced Locked Chest
 }
 
 local function AddLockboxInfo(tooltip, link)
@@ -65,6 +65,7 @@ ItemRefTooltip.SetHyperlink = function(self, link)
     orig_ItemRefTooltip_SetHyperlink(self, link)
     AddLockboxInfo(self, link)
 end
+
 
 
 
