@@ -134,22 +134,32 @@ GameTooltip:HookScript("OnUpdate", function(self)
     AddDifficultyLines(self, data)
 
 --------------------------------------------------
--- BAG ITEM HOOK (JUNKBOXES)
+-- BAG ITEM HOOK (JUNKBOX)
 --------------------------------------------------
 
-local orig_GameTooltip_SetBagItem = GameTooltip.SetBagItem
+local orig_SetBagItem = GameTooltip.SetBagItem
+
 GameTooltip.SetBagItem = function(self, bag, slot)
 
-    orig_GameTooltip_SetBagItem(self, bag, slot)
+    orig_SetBagItem(self, bag, slot)
 
-    local link = GetContainerItemLink(bag, slot)
-    if link then
-        AddLockboxInfo(self, link)
-    end
+    local tooltip = self
+
+    tooltip:SetScript("OnUpdate", function()
+
+        local link = GetContainerItemLink(bag, slot)
+        if not link then return end
+
+        AddLockboxInfo(tooltip, link)
+
+        tooltip:SetScript("OnUpdate", nil)
+    end)
 end
 
 
+
 end)
+
 
 
 
