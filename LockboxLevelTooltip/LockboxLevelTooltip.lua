@@ -66,6 +66,68 @@ ItemRefTooltip.SetHyperlink = function(self, link)
     AddLockboxInfo(self, link)
 end
 
+--------------------------------------------------
+-- FOOTLOCKER DATA (WORLD OBJECTS)
+--------------------------------------------------
+
+local FOOTLOCKER_DATA = {
+
+    ["Battered Footlocker"] = { orange=110, yellow=135, green=160, grey=170 },
+    ["Waterlogged Footlocker"] = { orange=70, yellow=95, green=120, grey=150 },
+    ["Dented Footlocker"] = { orange=175, yellow=200, green=225 },
+    ["Mossy Footlocker"] = { orange=175, yellow=200, green=225, grey=250 },
+    ["Scarlet Footlocker"] = { orange=250, yellow=275, green=300 },
+
+    ["Practice Lockbox"] = { orange=1, yellow=30, green=55, grey=100 },
+    ["Buccaneer's Strongbox"] = { orange=1, yellow=30, green=55, grey=105 },
+}
+
+--------------------------------------------------
+-- FOOTLOCKER TOOLTIP DETECTION
+--------------------------------------------------
+
+GameTooltip:HookScript("OnUpdate", function(self)
+
+    if not self:IsShown() then return end
+
+    local firstLine = _G["GameTooltipTextLeft1"]
+    if not firstLine then return end
+
+    local name = firstLine:GetText()
+    if not name then return end
+
+    local data = FOOTLOCKER_DATA[name]
+    if not data then return end
+
+    -- prevent duplicate lines
+    for i = 1, self:NumLines() do
+        local line = _G["GameTooltipTextLeft"..i]
+        if line and line:GetText()
+        and string.find(line:GetText(), "Lockpicking Difficulty:") then
+            return
+        end
+    end
+
+    -- Add difficulty lines
+    self:AddLine(" ")
+    self:AddLine("Lockpicking Difficulty:")
+
+    if data.orange then
+        self:AddLine(data.orange, 1, 0.5, 0)
+    end
+    if data.yellow then
+        self:AddLine(data.yellow, 1, 1, 0)
+    end
+    if data.green then
+        self:AddLine(data.green, 0, 1, 0)
+    end
+    if data.grey then
+        self:AddLine(data.grey, 0.6, 0.6, 0.6)
+    end
+
+    self:Show()
+
+end)
 
 
 
