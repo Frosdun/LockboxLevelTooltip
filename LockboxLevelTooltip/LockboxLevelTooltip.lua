@@ -1,130 +1,68 @@
---------------------------------------------------
--- LOCKPICKING TOOLTIP - TURTLE WOW
---------------------------------------------------
-
-local ADDON_NAME = ...
-
-local frame = CreateFrame("Frame")
-
---------------------------------------------------
--- LOCKBOX DATA (ITEMS)
---------------------------------------------------
-
 local LOCKBOX_DATA = {
 
-    ["Practice Lockbox"]        = {1, 30, 55, 100},
-    ["Ornate Bronze Lockbox"]   = {25, 70, 125, 175},
-    ["Strong Iron Lockbox"]     = {70, 125, 175, 225},
-    ["Steel Lockbox"]           = {125, 175, 225, 275},
-    ["Reinforced Steel Lockbox"]= {175, 225, 275, 325},
-    ["Mithril Lockbox"]         = {225, 250, 275, 325},
-    ["Thorium Lockbox"]         = {250, 275, 300, 350},
-    ["Eternium Lockbox"]        = {300, 325, 350, 400},
+    -- Lockboxes
+    [4632] = { yellow=1, green=86, grey=105 },                 -- Ornate Bronze Lockbox
+    [4633] = { orange=25, yellow=50, green=75, grey=125 },     -- Heavy Bronze Lockbox
+    [4634] = { orange=70, yellow=95, green=120, grey=170 },    -- Iron Lockbox
+    [4636] = { orange=125, yellow=150, green=175, grey=225 },  -- Strong Iron Lockbox
+    [4637] = { orange=175, yellow=205, green=225, grey=275 },  -- Steel Lockbox
+    [4638] = { orange=225, yellow=250, green=275 },            -- Reinforced Steel Lockbox
+    [5758] = { orange=225, yellow=250, green=275 },            -- Mithril Lockbox
+    [5759] = { orange=225, yellow=250, green=275 },            -- Thorium Lockbox
+    [5760] = { orange=225, yellow=265, green=320 },            -- Eternium Lockbox (Turtle)
+
+    -- Fishing Locked Chests
+    [6354]  = { orange=1 },                                    -- Small Locked Chest
+    [6355]  = { orange=70 },                                   -- Sturdy Locked Chest
+    [13875] = { orange=175 },                                  -- Ironbound Locked Chest
+    [13876] = { orange=250, green=300 },                       -- Reinforced Locked Chest (verify ID if needed)
 }
 
---------------------------------------------------
--- FOOTLOCKER DATA (WORLD OBJECTS)
---------------------------------------------------
+local function AddLockboxInfo(tooltip, link)
+    if not link then return end
 
-local FOOTLOCKER_DATA = {
+    local itemID = string.match(link, "item:(%d+)")
+    if not itemID then return end
 
-    ["Battered Footlocker"]   = { orange=110, yellow=135, green=160, grey=170 },
-    ["Waterlogged Footlocker"]= { orange=70,  yellow=95,  green=120, grey=150 },
-    ["Dented Footlocker"]     = { orange=175, yellow=200, green=225 },
-    ["Mossy Footlocker"]      = { orange=175, yellow=200, green=225, grey=250 },
-    ["Scarlet Footlocker"]    = { orange=250, yellow=275, green=300 },
-}
+    itemID = tonumber(itemID)
 
---------------------------------------------------
--- ADD LOCKPICK INFO (ITEM TOOLTIP)
---------------------------------------------------
-
-local function AddLockpickInfo(tooltip, name)
-
-    local data = LOCKBOX_DATA[name]
+    local data = LOCKBOX_DATA[itemID]
     if not data then return end
-
-    for i=1, tooltip:NumLines() do
-        local line = _G[tooltip:GetName().."TextLeft"..i]
-        if line and line:GetText()
-        and string.find(line:GetText(),"Lockpicking Difficulty") then
-            return
-        end
-    end
 
     tooltip:AddLine(" ")
     tooltip:AddLine("Lockpicking Difficulty:")
 
-    tooltip:AddLine(data[1],1,0.5,0)
-    tooltip:AddLine(data[2],1,1,0)
-    tooltip:AddLine(data[3],0,1,0)
-    tooltip:AddLine(data[4],0.6,0.6,0.6)
-end
-
---------------------------------------------------
--- ITEM TOOLTIP HOOKS
---------------------------------------------------
-
-GameTooltip:HookScript("OnTooltipSetItem", function(self)
-
-    local _, link = self:GetItem()
-    if not link then return end
-
-    local name = GetItemInfo(link)
-    if not name then return end
-
-    AddLockpickInfo(self, name)
-    self:Show()
-end)
-
-ItemRefTooltip:HookScript("OnTooltipSetItem", function(self)
-
-    local _, link = self:GetItem()
-    if not link then return end
-
-    local name = GetItemInfo(link)
-    if not name then return end
-
-    AddLockpickInfo(self, name)
-    self:Show()
-end)
-
---------------------------------------------------
--- FOOTLOCKER TOOLTIP FIX (WORLD OBJECTS)
---------------------------------------------------
-
-local original_SetText = GameTooltip.SetText
-
-GameTooltip.SetText = function(self, text, r, g, b, a, wrap)
-
-    original_SetText(self, text, r, g, b, a, wrap)
-
-    local data = FOOTLOCKER_DATA[text]
-    if not data then return end
-
-    for i=1, self:NumLines() do
-        local line = _G[self:GetName().."TextLeft"..i]
-        if line and line:GetText()
-        and string.find(line:GetText(),"Lockpicking Difficulty") then
-            return
-        end
-    end
-
-    self:AddLine(" ")
-    self:AddLine("Lockpicking Difficulty:")
-
     if data.orange then
-        self:AddLine(data.orange,1,0.5,0)
-    end
-    if data.yellow then
-        self:AddLine(data.yellow,1,1,0)
-    end
-    if data.green then
-        self:AddLine(data.green,0,1,0)
-    end
-    if data.grey then
-        self:AddLine(data.grey,0.6,0.6,0.6)
+        tooltip:AddLine(data.orange, 1, 0.5, 0) -- orange
     end
 
-    self:Show()
+    if data.yellow then
+        tooltip:AddLine(data.yellow, 1, 1, 0) -- yellow
+    end
+
+    if data.green then
+        tooltip:AddLine(data.green, 0, 1, 0) -- green
+    end
+
+    if data.grey then
+        tooltip:AddLine(data.grey, 0.6, 0.6, 0.6) -- grey
+    end
+
+    tooltip:Show()
 end
+
+
+-- Hook GameTooltip (bags, inventory, etc.)
+local orig_GameTooltip_SetHyperlink = GameTooltip.SetHyperlink
+GameTooltip.SetHyperlink = function(self, link)
+    orig_GameTooltip_SetHyperlink(self, link)
+    AddLockboxInfo(self, link)
+end
+
+-- Hook ItemRefTooltip (chat links)
+local orig_ItemRefTooltip_SetHyperlink = ItemRefTooltip.SetHyperlink
+ItemRefTooltip.SetHyperlink = function(self, link)
+    orig_ItemRefTooltip_SetHyperlink(self, link)
+    AddLockboxInfo(self, link)
+end
+
