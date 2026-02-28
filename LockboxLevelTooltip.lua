@@ -1,5 +1,5 @@
 --------------------------------------------------
--- LOCKBOX DATA (BY NAME)
+-- LOCKBOX DATA (BY TOOLTIP NAME)
 --------------------------------------------------
 
 local LOCKBOX_NAMES = {
@@ -21,24 +21,12 @@ local LOCKBOX_NAMES = {
 }
 
 --------------------------------------------------
--- TOOLTIP SCANNER
+-- ADD LINES
 --------------------------------------------------
 
-GameTooltip:HookScript("OnUpdate", function(self)
+local function AddDifficulty(tooltip, data)
 
-    if not self:IsShown() then return end
-
-    local title = _G["GameTooltipTextLeft1"]
-    if not title then return end
-
-    local name = title:GetText()
-    if not name then return end
-
-    local data = LOCKBOX_NAMES[name]
-    if not data then return end
-
-    -- prevent duplicate spam
-    for i=1,self:NumLines() do
+    for i=1, tooltip:NumLines() do
         local line = _G["GameTooltipTextLeft"..i]
         if line and line:GetText()
         and string.find(line:GetText(),"Lockpicking Difficulty") then
@@ -46,14 +34,36 @@ GameTooltip:HookScript("OnUpdate", function(self)
         end
     end
 
-    self:AddLine(" ")
-    self:AddLine("Lockpicking Difficulty:",1,0.82,0)
+    tooltip:AddLine(" ")
+    tooltip:AddLine("Lockpicking Difficulty:",1,0.82,0)
 
-    self:AddLine(data[1],1,0.5,0)
-    self:AddLine(data[2],1,1,0)
-    self:AddLine(data[3],0,1,0)
-    self:AddLine(data[4],0.6,0.6,0.6)
+    tooltip:AddLine(data[1],1,0.5,0)
+    tooltip:AddLine(data[2],1,1,0)
+    tooltip:AddLine(data[3],0,1,0)
+    tooltip:AddLine(data[4],0.6,0.6,0.6)
 
-    self:Show()
+    tooltip:Show()
+end
+
+--------------------------------------------------
+-- UNIVERSAL TOOLTIP SCAN
+--------------------------------------------------
+
+local f = CreateFrame("Frame")
+
+f:SetScript("OnUpdate", function()
+
+    if not GameTooltip:IsShown() then return end
+
+    local text = _G["GameTooltipTextLeft1"]
+    if not text then return end
+
+    local name = text:GetText()
+    if not name then return end
+
+    local data = LOCKBOX_NAMES[name]
+    if data then
+        AddDifficulty(GameTooltip, data)
+    end
 
 end)
