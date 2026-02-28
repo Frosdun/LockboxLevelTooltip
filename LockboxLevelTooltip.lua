@@ -1,50 +1,44 @@
 --------------------------------------------------
--- LOCKBOX DATA
+-- LOCKBOX DATA (BY NAME)
 --------------------------------------------------
 
-local LOCKBOX_DATA = {
+local LOCKBOX_NAMES = {
 
-    -- Lockboxes
-    [4632]  = { orange=1, yellow=30, green=55, grey=100 },
-    [4633]  = { orange=25, yellow=50, green=75, grey=125 },
-    [4634]  = { orange=70, yellow=95, green=120, grey=170 },
-    [4636]  = { orange=125, yellow=150, green=175, grey=225 },
-    [4637]  = { orange=175, yellow=200, green=225, grey=275 },
-    [4638]  = { orange=225, yellow=250, green=275, grey=325 },
-    [5758]  = { orange=225, yellow=250, green=275, grey=325 },
-    [5759]  = { orange=225, yellow=250, green=275, grey=325 },
-    [5760]  = { orange=225, yellow=265, green=320, grey=375 },
+    ["Ornate Bronze Lockbox"] = {1,30,55,100},
+    ["Heavy Bronze Lockbox"]  = {25,50,75,125},
+    ["Iron Lockbox"]          = {70,95,120,170},
+    ["Strong Iron Lockbox"]   = {125,150,175,225},
+    ["Steel Lockbox"]         = {175,200,225,275},
+    ["Reinforced Steel Lockbox"] = {225,250,275,325},
+    ["Mithril Lockbox"]       = {225,250,275,325},
+    ["Thorium Lockbox"]       = {225,250,275,325},
+    ["Eternium Lockbox"]      = {225,265,320,375},
 
-    -- Junkboxes
-    [16882] = { orange=1, yellow=30, green=75, grey=105 },
-    [16883] = { orange=75, yellow=100, green=125, grey=175 },
-    [16884] = { orange=175, yellow=200, green=225, grey=275 },
-    [16885] = { orange=250, yellow=275, green=300, grey=350 },
-
-    -- Fishing
-    [6354]  = { orange=1 },
-    [6355]  = { orange=70 },
-    [13875] = { orange=175 },
-    [13876] = { orange=250 },
+    ["Battered Junkbox"] = {1,30,75,105},
+    ["Worn Junkbox"]     = {75,100,125,175},
+    ["Sturdy Junkbox"]   = {175,200,225,275},
+    ["Heavy Junkbox"]    = {250,275,300,350},
 }
 
 --------------------------------------------------
--- ADD INFO
+-- TOOLTIP SCANNER
 --------------------------------------------------
 
-local function AddLockboxInfo(tooltip)
+GameTooltip:HookScript("OnUpdate", function(self)
 
-    local name, link = tooltip:GetItem()
-    if not link then return end
+    if not self:IsShown() then return end
 
-    local itemID = tonumber(string.match(link,"item:(%d+)"))
-    if not itemID then return end
+    local title = _G["GameTooltipTextLeft1"]
+    if not title then return end
 
-    local data = LOCKBOX_DATA[itemID]
+    local name = title:GetText()
+    if not name then return end
+
+    local data = LOCKBOX_NAMES[name]
     if not data then return end
 
-    -- prevent duplicates
-    for i=1, tooltip:NumLines() do
+    -- prevent duplicate spam
+    for i=1,self:NumLines() do
         local line = _G["GameTooltipTextLeft"..i]
         if line and line:GetText()
         and string.find(line:GetText(),"Lockpicking Difficulty") then
@@ -52,20 +46,14 @@ local function AddLockboxInfo(tooltip)
         end
     end
 
-    tooltip:AddLine(" ")
-    tooltip:AddLine("Lockpicking Difficulty:",1,0.82,0)
+    self:AddLine(" ")
+    self:AddLine("Lockpicking Difficulty:",1,0.82,0)
 
-    if data.orange then tooltip:AddLine(data.orange,1,0.5,0) end
-    if data.yellow then tooltip:AddLine(data.yellow,1,1,0) end
-    if data.green then tooltip:AddLine(data.green,0,1,0) end
-    if data.grey then tooltip:AddLine(data.grey,0.6,0.6,0.6) end
+    self:AddLine(data[1],1,0.5,0)
+    self:AddLine(data[2],1,1,0)
+    self:AddLine(data[3],0,1,0)
+    self:AddLine(data[4],0.6,0.6,0.6)
 
-    tooltip:Show()
-end
+    self:Show()
 
---------------------------------------------------
--- ✅ MODERN TURTLE WOW HOOK
---------------------------------------------------
-
-GameTooltip:HookScript("OnTooltipSetItem", AddLockboxInfo)
-ItemRefTooltip:HookScript("OnTooltipSetItem", AddLockboxInfo)
+end)
