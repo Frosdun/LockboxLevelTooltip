@@ -66,4 +66,26 @@ f:SetScript("OnUpdate", function()
         AddDifficulty(GameTooltip, data)
     end
 
+        local function AddLockboxInfo(tooltip)
+    local name, link = tooltip:GetItem()
+    if not link then return end
+
+    local itemID = tonumber(string.match(link, "item:(%d+)"))
+    if not itemID then return end
+
+    local data = LOCKBOX_DATA[itemID]
+    if not data then return end
+
+    tooltip:AddLine("Lockpicking required: "..data.orange, 1, 0.82, 0)
+end
+
+GameTooltip:HookScript("OnTooltipSetItem", function()
+    AddLockboxInfo(GameTooltip)
 end)
+
+ItemRefTooltip:HookScript("OnTooltipSetItem", function()
+    AddLockboxInfo(ItemRefTooltip)
+end)
+
+end)
+
