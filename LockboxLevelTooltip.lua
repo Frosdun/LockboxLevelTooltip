@@ -11,22 +11,16 @@ local LOCKBOX_DATA = {
     [5759] = { orange=225, yellow=250, green=275 },
     [5760] = { orange=225, yellow=265, green=320 },
 
-    -- Fishing Locked Chests
-    [6354]  = { orange=1 },
-    [6355]  = { orange=70 },
-    [13875] = { orange=175 },
-    [13876] = { orange=250, green=300 },
-
     -- Junkboxes
-    [16882] = { orange=1, yellow=30, green=75, grey=105 },   -- Battered Junkbox
-    [16883] = { orange=75, yellow=100, green=125, grey=175 },-- Worn Junkbox
-    [16884] = { orange=175, yellow=200, green=225, grey=275 },-- Sturdy Junkbox
-    [16885] = { orange=250, yellow=275, green=300, grey=350 },-- Heavy Junkbox
+    [16882] = { orange=1, yellow=30, green=75, grey=105 },
+    [16883] = { orange=75, yellow=100, green=125, grey=175 },
+    [16884] = { orange=175, yellow=200, green=225, grey=275 },
+    [16885] = { orange=250, yellow=275, green=300, grey=350 },
 }
 
-local function AddLockboxInfo(tooltip)
+local function AddLockboxInfo(self)
 
-    local name, link = tooltip:GetItem()
+    local name, link = self:GetItem()
     if not link then return end
 
     local itemID = tonumber(string.match(link, "item:(%d+)"))
@@ -35,31 +29,40 @@ local function AddLockboxInfo(tooltip)
     local data = LOCKBOX_DATA[itemID]
     if not data then return end
 
-    tooltip:AddLine(" ")
-    tooltip:AddLine("Lockpicking Difficulty:")
+    self:AddLine(" ")
+    self:AddLine("Lockpicking Difficulty:")
 
     if data.orange then
-        tooltip:AddLine(data.orange, 1, 0.5, 0)
+        self:AddLine(data.orange, 1, 0.5, 0)
     end
 
     if data.yellow then
-        tooltip:AddLine(data.yellow, 1, 1, 0)
+        self:AddLine(data.yellow, 1, 1, 0)
     end
 
     if data.green then
-        tooltip:AddLine(data.green, 0, 1, 0)
+        self:AddLine(data.green, 0, 1, 0)
     end
 
     if data.grey then
-        tooltip:AddLine(data.grey, 0.6, 0.6, 0.6)
+        self:AddLine(data.grey, 0.6, 0.6, 0.6)
     end
 
-    tooltip:Show()
+    self:Show()
 end
 
 
--- Universal tooltip hook (bags, chat, vendors, etc.)
-GameTooltip:HookScript("OnTooltipSetItem", AddLockboxInfo)
+--------------------------------------------------
+-- WAIT UNTIL UI LOADS
+--------------------------------------------------
 
--- Chat link popup window
-ItemRefTooltip:HookScript("OnTooltipSetItem", AddLockboxInfo)
+local frame = CreateFrame("Frame")
+
+frame:RegisterEvent("PLAYER_LOGIN")
+
+frame:SetScript("OnEvent", function()
+
+    GameTooltip:HookScript("OnTooltipSetItem", AddLockboxInfo)
+    ItemRefTooltip:HookScript("OnTooltipSetItem", AddLockboxInfo)
+
+end)
