@@ -18,9 +18,9 @@ local LOCKBOX_DATA = {
     [16885] = { orange=250, yellow=275, green=300, grey=350 },
 }
 
-local function AddLockboxInfo(self)
+local function AddLockboxInfo()
 
-    local name, link = self:GetItem()
+    local name, link = GameTooltip:GetItem()
     if not link then return end
 
     local itemID = tonumber(string.match(link, "item:(%d+)"))
@@ -29,40 +29,37 @@ local function AddLockboxInfo(self)
     local data = LOCKBOX_DATA[itemID]
     if not data then return end
 
-    self:AddLine(" ")
-    self:AddLine("Lockpicking Difficulty:")
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("Lockpicking Difficulty:")
 
     if data.orange then
-        self:AddLine(data.orange, 1, 0.5, 0)
+        GameTooltip:AddLine(data.orange,1,0.5,0)
     end
 
     if data.yellow then
-        self:AddLine(data.yellow, 1, 1, 0)
+        GameTooltip:AddLine(data.yellow,1,1,0)
     end
 
     if data.green then
-        self:AddLine(data.green, 0, 1, 0)
+        GameTooltip:AddLine(data.green,0,1,0)
     end
 
     if data.grey then
-        self:AddLine(data.grey, 0.6, 0.6, 0.6)
+        GameTooltip:AddLine(data.grey,0.6,0.6,0.6)
     end
 
-    self:Show()
+    GameTooltip:Show()
 end
 
-
 --------------------------------------------------
--- WAIT UNTIL UI LOADS
+-- Hook after login
 --------------------------------------------------
 
-local frame = CreateFrame("Frame")
+local f = CreateFrame("Frame")
+f:RegisterEvent("PLAYER_LOGIN")
 
-frame:RegisterEvent("PLAYER_LOGIN")
-
-frame:SetScript("OnEvent", function()
+f:SetScript("OnEvent", function()
 
     GameTooltip:HookScript("OnTooltipSetItem", AddLockboxInfo)
-    ItemRefTooltip:HookScript("OnTooltipSetItem", AddLockboxInfo)
 
 end)
