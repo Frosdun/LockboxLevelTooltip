@@ -1,10 +1,11 @@
 ## Interface: 11200
 ## Title: Lockbox Level Tooltip |cff40ff40[Turtle]|r
-## Version: 2.1
+## Version: 2.2
 ## Notes: Shows required lockpicking level on lockboxes.
 ## Author: Frosdun / ChatGPT / Google AI
 
 LockboxLevelTooltip.lua
+
 
 
 
