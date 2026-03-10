@@ -23,7 +23,6 @@ local function AddLockboxInfo(tooltip, link)
 
     local itemID = string.match(link, "item:(%d+)")
     if not itemID then return end
-
     itemID = tonumber(itemID)
 
     local data = LOCKBOX_DATA[itemID]
@@ -33,33 +32,35 @@ local function AddLockboxInfo(tooltip, link)
     tooltip:AddLine("Lockpicking Difficulty:")
 
     if data.orange then
-        tooltip:AddLine(data.orange, 1, 0.5, 0) -- orange
+        tooltip:AddLine(data.orange, 1, 0.5, 0)
     end
 
     if data.yellow then
-        tooltip:AddLine(data.yellow, 1, 1, 0) -- yellow
+        tooltip:AddLine(data.yellow, 1, 1, 0)
     end
 
     if data.green then
-        tooltip:AddLine(data.green, 0, 1, 0) -- green
+        tooltip:AddLine(data.green, 0, 1, 0)
     end
 
     if data.grey then
-        tooltip:AddLine(data.grey, 0.6, 0.6, 0.6) -- grey
+        tooltip:AddLine(data.grey, 0.6, 0.6, 0.6)
     end
 
     tooltip:Show()
 end
 
 
--- Hook GameTooltip (bags, inventory, etc.)
+--------------------------------------------------
+-- CHAT LINKS (keeps your working feature)
+--------------------------------------------------
+
 local orig_GameTooltip_SetHyperlink = GameTooltip.SetHyperlink
 GameTooltip.SetHyperlink = function(self, link)
     orig_GameTooltip_SetHyperlink(self, link)
     AddLockboxInfo(self, link)
 end
 
--- Hook ItemRefTooltip (chat links)
 local orig_ItemRefTooltip_SetHyperlink = ItemRefTooltip.SetHyperlink
 ItemRefTooltip.SetHyperlink = function(self, link)
     orig_ItemRefTooltip_SetHyperlink(self, link)
@@ -67,3 +68,27 @@ ItemRefTooltip.SetHyperlink = function(self, link)
 end
 
 
+--------------------------------------------------
+-- BAG ITEMS (inventory / bank bags)
+--------------------------------------------------
+
+local orig_GameTooltip_SetBagItem = GameTooltip.SetBagItem
+GameTooltip.SetBagItem = function(self, bag, slot)
+    orig_GameTooltip_SetBagItem(self, bag, slot)
+
+    local link = GetContainerItemLink(bag, slot)
+    AddLockboxInfo(self, link)
+end
+
+
+--------------------------------------------------
+-- INVENTORY ITEMS (equipped items)
+--------------------------------------------------
+
+local orig_GameTooltip_SetInventoryItem = GameTooltip.SetInventoryItem
+GameTooltip.SetInventoryItem = function(self, unit, slot)
+    orig_GameTooltip_SetInventoryItem(self, unit, slot)
+
+    local link = GetInventoryItemLink(unit, slot)
+    AddLockboxInfo(self, link)
+end
